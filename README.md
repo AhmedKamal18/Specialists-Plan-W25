@@ -1,6 +1,6 @@
-kk# 🚀 Specialist Problem-Solving Plan
+# 🚀 Specialists Plan W25
 
-Welcome to the **Specialist Problem-Solving Plan** repository! This repository is dedicated to students who have completed the Pupils Plan or have an equivalent background in problem-solving and algorithm design. Each week we tackle advanced topics in dynamic programming, data structures, and number theory, building up to more complex algorithms and techniques.
+Welcome to the **Specialists-Plan-W25** repository! This repository is dedicated to students who have completed the Pupils Plan or have an equivalent background in problem-solving and algorithm design. Each week we tackle advanced topics in dynamic programming, data structures, and number theory, building up to more complex algorithms and techniques.
 
 ## 🌐 VJudge Group
 
