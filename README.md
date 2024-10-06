@@ -14,17 +14,17 @@ Join our problem-solving community on [VJudge](https://vjudge.net/group/guc) to 
 - [Problem Set](https://vjudge.net/contest/655953) | [Solutions](https://www.youtube.com/playlist?list=PLc02D4EoVYQCHlZ515cRhOAIzlbbmaakS)
 - [Additional Problems](https://vjudge.net/contest/655957) | [Solutions](https://www.youtube.com/playlist?list=PLc02D4EoVYQCHlZ515cRhOAIzlbbmaakS)
 
-
-
-<!--
 ### Week 2: Harder DP (21/9)
-- **Topics**: Bitmask DP, Digit DP, Permutation to Subset DP
-- Problem Set | Solutions
+- **Topics**: Bitmask DP, Digit DP, Permutation to Subset 
+- [Problem Set](https://vjudge.net/contest/657535) | [Solutions](https://www.youtube.com/watch?v=mbvHtjxYW3k&list=PLc02D4EoVYQBG5bb_7HM4MycyweV45wjp)
+- [Additional Problems](https://vjudge.net/contest/657538) | [Solutions](https://www.youtube.com/watch?v=mbvHtjxYW3k&list=PLc02D4EoVYQBG5bb_7HM4MycyweV45wjp)
 
 ### Week 3: Different Forms of DP (28/9)
-- **Topics**: Interval DP, Prefix Sum DP, Range DP
-- Problem Set | Solutions
+- **Topics**: Prefix DP, Subarray DP, Range DP, Interval DP, Permutation DP
+- [Problem Set](https://vjudge.net/contest/659398#overview) | [Solutions](https://www.youtube.com/watch?v=GVg4eB6ZuUY&list=PLc02D4EoVYQA5GNs5Fc2DgcA1HCEviM0h)
+- [Additional Problems](https://vjudge.net/contest/659400#overview) | [Solutions](https://www.youtube.com/watch?v=GVg4eB6ZuUY&list=PLc02D4EoVYQA5GNs5Fc2DgcA1HCEviM0h)
 
+<!--
 ### Week 4: Basic Segment Tree + Applications (5/10)
 - **Topics**: DFS on Segment Tree (kth One, First Greater)
 - Problem Set | Solutions
