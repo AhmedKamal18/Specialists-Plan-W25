@@ -24,6 +24,11 @@ Join our problem-solving community on [VJudge](https://vjudge.net/group/guc) to 
 - [Problem Set](https://vjudge.net/contest/659398#overview) | [Solutions](https://www.youtube.com/watch?v=GVg4eB6ZuUY&list=PLc02D4EoVYQA5GNs5Fc2DgcA1HCEviM0h)
 - [Additional Problems](https://vjudge.net/contest/659400#overview) | [Solutions](https://www.youtube.com/watch?v=GVg4eB6ZuUY&list=PLc02D4EoVYQA5GNs5Fc2DgcA1HCEviM0h)
 
+### Week 6: Counting (2/11)
+- **Topics**: Basic counting techniques
+- [Problem Set](https://vjudge.net/contest/658956) | [Solutions](https://www.youtube.com/playlist?list=PLc02D4EoVYQAg46jExEGcPnkV6eAQns60)
+- [Additional Problems](https://vjudge.net/contest/658958) | [Solutions](https://www.youtube.com/playlist?list=PLc02D4EoVYQAg46jExEGcPnkV6eAQns60)
+
 <!--
 ### Week 4: Basic Segment Tree + Applications (5/10)
 - **Topics**: DFS on Segment Tree (kth One, First Greater)
@@ -31,10 +36,6 @@ Join our problem-solving community on [VJudge](https://vjudge.net/group/guc) to 
 
 ### Week 5: Lazy Propagation + DP with Segment Tree (12/10)
 - **Topics**: Lazy Propagation, Segment Tree Optimizations
-- Problem Set | Solutions
-
-### Week 6: Counting (2/11)
-- **Topics**: Advanced Counting Techniques
 - Problem Set | Solutions
 
 ### Week 7: Matrix Power (9/11)
