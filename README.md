@@ -29,6 +29,11 @@ Join our problem-solving community on [VJudge](https://vjudge.net/group/guc) to 
 - [Problem Set](https://vjudge.net/contest/658956) | [Solutions](https://www.youtube.com/playlist?list=PLc02D4EoVYQAg46jExEGcPnkV6eAQns60)
 - [Additional Problems](https://vjudge.net/contest/658958) | [Solutions](https://www.youtube.com/playlist?list=PLc02D4EoVYQAg46jExEGcPnkV6eAQns60)
 
+### Week 8: Number Theory (16/11)
+- **Topics**: Extended Euclid, Euler’s Phi, Mobius Mu
+- [Problem Set](https://vjudge.net/contest/672668) | [Solutions](https://www.youtube.com/playlist?list=PLc02D4EoVYQBFj5H2gGU5QJBQhpOJzTjD)
+- [Additional Problems](https://vjudge.net/contest/672767) | [Solutions](https://www.youtube.com/playlist?list=PLc02D4EoVYQBFj5H2gGU5QJBQhpOJzTjD)
+
 <!--
 ### Week 4: Basic Segment Tree + Applications (5/10)
 - **Topics**: DFS on Segment Tree (kth One, First Greater)
