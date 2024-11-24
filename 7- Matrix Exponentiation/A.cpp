@@ -23,7 +23,7 @@ vector<vector<ll>> matrixPower(vector<vector<ll>> a, ll n) {
         res[i][i] = 1;
     }
     while (n) {
-        if (n & 1]) res = matrixMul(res, a);
+        if (n & 1) res = matrixMul(res, a);
         a = matrixMul(a, a);
         n >>= 1;
     }

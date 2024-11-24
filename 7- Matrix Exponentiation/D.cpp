@@ -41,21 +41,19 @@ void solve(){
     }
     ll p, q, r;
     cin >> p >> q >> r;
-    mat[0][n+2] = p;
-    mat[0][n+1] = q;
-    mat[0][n] = r;
+    mat[0][n + 2] = p, mat[0][n + 1] = q, mat[0][n] = r;
     for (int i = 1; i < n; ++i) {
         mat[i][i - 1] = 1;
     }
-    mat[n][n] = mat[n][n+2] = 1;
-    mat[n][n+1] = 2;
-    mat[n+1][n+1] = mat[n+1][n+2] = mat[n+2][n+2] = 1;
+    mat[n][n] = mat[n][n + 2] = 1, mat[n][n + 1] = 2;
+    mat[n + 1][n + 1] = mat[n + 1][n + 2] = 1;
+    mat[n + 2][n + 2] = 1;
     if (k < n){
         cout << base[k] << nl;
         return;
     }
     vector res = matrixPower(mat, k - n + 1);
-    ll ans = (res[0][n+2] + res[0][n+1] * n + res[0][n] * n * n)%mod;
+    ll ans = (res[0][n + 2] + res[0][n + 1] * n + res[0][n] * n * n)%mod;
     for (int i = 0; i < n; ++i) {
         (ans += res[0][i] * base[n - i - 1] % mod) %= mod;
     }
