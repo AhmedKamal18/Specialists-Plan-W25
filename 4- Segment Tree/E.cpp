@@ -25,6 +25,7 @@ using namespace std;
 #define debug(x)         cout << #x << " = " << x << "\n";
 #define vdebug(a)        cout << #a << " = "; for(auto x: a) cout << x << " "; cout << "\n";
 
+
  struct SegmentTree {
 #define LeftChild  (node * 2 + 1)
 #define RightChild (node * 2 + 2)
@@ -33,21 +34,16 @@ using namespace std;
  private:
      struct Node {
          int sum;
-         int pref;
-         int suff;
-         int mx;
 
-         Node() {
-             mx = pref = suff = -1e15;
-             sum = 0;
+         Node() : sum(0) {
          }
 
-         Node(int x) : sum(x) {
-             mx = pref = suff = sum = x;
+         Node(int x) {
+             sum = x;
          }
 
          void change(int x) {
-             mx = pref = suff = sum = x;
+             sum += x;
          }
      };
 
@@ -70,9 +66,6 @@ using namespace std;
 
      Node merge(Node &l, Node &r) {
          Node ans = Node();
-         ans.mx = max({l.mx, r.mx, l.suff + r.pref});
-         ans.pref = max(l.pref, l.sum + r.pref);
-         ans.suff = max(r.suff, r.sum + l.suff);
          ans.sum = l.sum + r.sum;
          return ans;
      }
@@ -93,8 +86,8 @@ using namespace std;
      }
 
      Node query(int left, int right, int node, int l, int r) {
-         if (l >= left and r <= right) return segData[node];
-         if (l >= right or left >= r) return Node();
+         if (r <= left or l >= right) {return Node();}
+         if (l >= left and r <= right) {return segData[node];}
 
          Node L = query(left, right, LeftChild, l, mid);
          Node R = query(left, right, RightChild, mid, r);
@@ -114,29 +107,93 @@ using namespace std;
          update(idx, val, 0, 0, tree_size);
      }
 
-     int query(int left, int right) {
-         return query(left, right, 0, 0, tree_size).mx;
+     int query(int lf, int ri) {
+         return query(lf, ri, 0, 0, tree_size).sum;
      }
 
 #undef LeftChild
 #undef RightChild
 #undef mid
-     };
+ };
 
-void Cook(int testcase) {
-    int n, m;
-    cin >> n >> m;
-    vector<int> arr(n);
-    for (int i = 0; i < n; i++) cin >> arr[i];
 
-    SegmentTree st(n, arr);
-    while (m--) {
-        int i, x;
-        cin >> i >> x;
-        st.update(--i, x);
-        cout << max(0LL, st.query(0, n)) << '\n';
+struct coordinate_compression {
+private:
+    vector<long long> comp; // A vector to store the unique, sorted elements for compression.
+
+    // A private method to perform compression by sorting and removing duplicates.
+    void compress() {
+        sort(comp.begin(), comp.end()); // Sort the vector to arrange elements in ascending order.
+        comp.erase(unique(comp.begin(), comp.end()), comp.end()); // Remove duplicates to keep only unique elements.
     }
 
+public:
+    // Constructor that initializes the compression vector with the input and compresses it.
+    coordinate_compression(vector<long long> & v) {
+        comp = v; // Copy the input vector to the internal 'comp' vector.
+        compress(); // Call the compress function to sort and remove duplicates.
+    }
+
+    // Method to get the compressed index of a given value.
+    int get_index(long long val) {
+        return lower_bound(comp.begin(), comp.end(), val) - comp.begin();
+        // Finds the position where 'val' fits in the sorted 'comp' vector.
+        // Subtracting comp.begin() gives the zero-based index of 'val'.
+        // If a 1-based index is needed, add +1 to the result.
+    }
+
+    // Method to get the original value from the compressed index.
+    int get_origin(size_t idx) {
+        return comp[idx]; // Returns the original value corresponding to the given index in the compressed vector.
+    }
+};
+
+void Cook(int testcase) {
+    int n, q;
+    cin >> n >> q;
+    vector<int> arr(n);
+    for (int i = 0; i < n; i++) {cin >> arr[i];}
+
+    vector<int> arrWithUpdates = arr;
+    vector<tuple<int, int, int>> queries;
+    while (q--) {
+        char op;
+        cin >> op;
+        if (op == '!') {
+            int k, x;
+            cin >> k >> x;
+            queries.push_back({0, k - 1, x});
+            arrWithUpdates.push_back(x);
+        } else {
+            int l, r;
+            cin >> l >> r;
+            queries.push_back({1, l, r});
+        }
+    }
+
+    coordinate_compression comp(arrWithUpdates);
+    int mx = *max_element(all(arrWithUpdates));
+    int sz = comp.get_index(mx) + 2;
+    vector<int> freq(sz);
+    for (int i = 0; i < n; ++i) {
+        freq[comp.get_index(arr[i])]++;
+    }
+
+    SegmentTree st(sz, freq);
+    for (int i = 0; i < sz(queries); ++i) {
+        auto [op, l, r] = queries[i];
+        if (op) { // get range
+            int from = comp.get_index(l);
+            int to = comp.get_index(r + 1);
+            cout << st.query(from, to) << '\n';
+         } else { // update
+             int idxSub = comp.get_index(arr[l]);
+             arr[l] = r;
+             int idxAdd = comp.get_index(arr[l]);
+             st.update(idxSub, -1);
+             st.update(idxAdd, 1);
+         }
+    }
 }
 
 signed main() {

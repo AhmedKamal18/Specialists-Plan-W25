@@ -25,6 +25,7 @@ using namespace std;
 #define debug(x)         cout << #x << " = " << x << "\n";
 #define vdebug(a)        cout << #a << " = "; for(auto x: a) cout << x << " "; cout << "\n";
 
+
  struct SegmentTree {
 #define LeftChild  (node * 2 + 1)
 #define RightChild (node * 2 + 2)
@@ -33,21 +34,16 @@ using namespace std;
  private:
      struct Node {
          int sum;
-         int pref;
-         int suff;
-         int mx;
+         int val;
 
-         Node() {
-             mx = pref = suff = -1e15;
+         Node() : sum(0), val(0) {
+         }
+
+         Node(int x, int v) : sum(x), val(v) {
+         }
+
+         void change() {
              sum = 0;
-         }
-
-         Node(int x) : sum(x) {
-             mx = pref = suff = sum = x;
-         }
-
-         void change(int x) {
-             mx = pref = suff = sum = x;
          }
      };
 
@@ -57,7 +53,7 @@ using namespace std;
      void build(vector<int> &arr, int node, int l, int r) {
          if (r - l == 1) {
              if (l < arr.size()) {
-                 segData[node] = Node(arr[l]);
+                 segData[node] = Node(1, arr[l]);
              }
              return;
          }
@@ -70,36 +66,34 @@ using namespace std;
 
      Node merge(Node &l, Node &r) {
          Node ans = Node();
-         ans.mx = max({l.mx, r.mx, l.suff + r.pref});
-         ans.pref = max(l.pref, l.sum + r.pref);
-         ans.suff = max(r.suff, r.sum + l.suff);
          ans.sum = l.sum + r.sum;
          return ans;
      }
 
-     void update(int idx, int val, int node, int l, int r) {
+     void update(int idx, int node, int l, int r) {
          if (r - l == 1) {
-             segData[node].change(val);
+             segData[node].change();
              return;
          }
 
          if (idx < mid) {
-             update(idx, val, LeftChild, l, mid);
+             update(idx, LeftChild, l, mid);
          } else {
-             update(idx, val, RightChild, mid, r);
+             update(idx, RightChild, mid, r);
          }
 
          segData[node] = merge(segData[LeftChild], segData[RightChild]);
      }
 
-     Node query(int left, int right, int node, int l, int r) {
-         if (l >= left and r <= right) return segData[node];
-         if (l >= right or left >= r) return Node();
+     pair<int, int> query(int idx, int node, int l, int r) {
+         if (r - l == 1) {
+             return {segData[node].val, l};
+         }
 
-         Node L = query(left, right, LeftChild, l, mid);
-         Node R = query(left, right, RightChild, mid, r);
-
-         return merge(L, R);
+         if (idx <= segData[LeftChild].sum) {
+             return query(idx, LeftChild, l, mid);
+         }
+         return query(idx - segData[LeftChild].sum, RightChild, mid, r);
      }
 
  public:
@@ -110,33 +104,33 @@ using namespace std;
          build(arr, 0, 0, tree_size);
      }
 
-     void update(int idx, int val) {
-         update(idx, val, 0, 0, tree_size);
+     void update(int idx) {
+         update(idx, 0, 0, tree_size);
      }
 
-     int query(int left, int right) {
-         return query(left, right, 0, 0, tree_size).mx;
+     pair<int, int> query(int idx) {
+         return query(idx, 0, 0, tree_size);
      }
 
 #undef LeftChild
 #undef RightChild
 #undef mid
-     };
+ };
 
 void Cook(int testcase) {
-    int n, m;
-    cin >> n >> m;
+    int n;
+    cin >> n;
     vector<int> arr(n);
     for (int i = 0; i < n; i++) cin >> arr[i];
 
-    SegmentTree st(n, arr);
-    while (m--) {
-        int i, x;
-        cin >> i >> x;
-        st.update(--i, x);
-        cout << max(0LL, st.query(0, n)) << '\n';
-    }
+    SegmentTree st = SegmentTree(n, arr);
 
+    for (int i = 0, p; i < n; ++i) {
+        cin >> p;
+        auto [v, idx] = st.query(p);
+        cout << v << " \n"[i == n - 1];
+        st.update(idx);
+    }
 }
 
 signed main() {

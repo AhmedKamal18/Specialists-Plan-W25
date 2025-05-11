@@ -33,24 +33,21 @@ struct SegmentTree {
 private:
     struct Node {
         int mx;
-        int mx2;
-        int cnt;
-        int cnt2;
+        int open;
+        int close;
 
         Node() {
-            mx = mx2 = -1;
-            cnt = cnt2 = 0;
+            mx = open = close = 0;
         }
 
-        Node(int x, int x2, int y, int y2) {
-            mx = x;
-            mx2 = x2;
-            cnt = y;
-            cnt2 = y2;
+        Node(int x) {
+            mx = 0;
+            open = x;
+            close = !x;
         }
 
         void change(int x) {
-            mx = mx2 = x;
+            mx = x;
         }
     };
 
@@ -60,7 +57,7 @@ private:
     void build(vector<int> &arr, int node, int l, int r) {
         if (r - l == 1) {
             if (l < arr.size()) {
-                segData[node] = Node(arr[l], -1, 1, 0);
+                segData[node] = Node(arr[l]);
             }
             return;
         }
@@ -73,22 +70,11 @@ private:
 
     Node merge(Node &l, Node &r) {
         Node ret = Node();
-        map<int, int> f;
-        f[l.mx] += l.cnt;
-        f[r.mx] += r.cnt;
-        f[l.mx2] += l.cnt2;
-        f[r.mx2] += r.cnt2;
-        if (f.size() == 1) {
-            return Node(f.begin()->first, 0, f.begin()->second, 0);
-        } else {
-            auto it = f.rbegin();
-            ret.mx = it->first;
-            ret.cnt = it->second;
-            ++it;
-            ret.mx2 = it->first;
-            ret.cnt2 = it->second;
-            return ret;
-        }
+        int correct = min(l.open, r.close);
+        ret.mx = l.mx + r.mx + correct;
+        ret.open = l.open + r.open - correct;
+        ret.close = l.close + r.close - correct;
+        return ret;
     }
 
     void update(int idx, int val, int node, int l, int r) {
@@ -129,7 +115,7 @@ public:
     }
 
     int query(int l, int r) {
-        return query(l, r, 0, 0, tree_size).cnt2;
+        return query(l, r, 0, 0, tree_size).mx;
     }
 
 #undef LeftChild
@@ -139,24 +125,23 @@ public:
 
 
 void Cook(int testcase) {
-    int n, q;
-    cin >> n >> q;
-    vector<int> arr(n);
-    for (int i = 0; i < n; i++) cin >> arr[i];
+    string s;
+    cin >> s;
 
-    SegmentTree st(n, arr);
+    vector<int> arr;
+    for (char i : s) {
+        arr.push_back(i == '(');
+    }
+
+    SegmentTree st(sz(s), arr);
+
+    int q;
+    cin >> q;
+
     while (q--) {
-        int o;
-        cin >> o;
-        if (o & 1) {
-            int p, x;
-            cin >> p >> x;
-            st.update(p - 1, x);
-        } else {
-            int l, r;
-            cin >> l >> r;
-            cout << st.query(l - 1, r) << '\n';
-        }
+        int l, r;
+        cin >> l >> r;
+        cout << st.query(l - 1, r) * 2 << '\n';
     }
 }
 

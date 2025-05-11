@@ -33,21 +33,15 @@ using namespace std;
  private:
      struct Node {
          int sum;
-         int pref;
-         int suff;
-         int mx;
 
-         Node() {
-             mx = pref = suff = -1e15;
-             sum = 0;
+         Node() : sum(1e15) {
          }
 
          Node(int x) : sum(x) {
-             mx = pref = suff = sum = x;
          }
 
          void change(int x) {
-             mx = pref = suff = sum = x;
+             sum += x;
          }
      };
 
@@ -70,10 +64,7 @@ using namespace std;
 
      Node merge(Node &l, Node &r) {
          Node ans = Node();
-         ans.mx = max({l.mx, r.mx, l.suff + r.pref});
-         ans.pref = max(l.pref, l.sum + r.pref);
-         ans.suff = max(r.suff, r.sum + l.suff);
-         ans.sum = l.sum + r.sum;
+         ans.sum = min(l.sum, r.sum);
          return ans;
      }
 
@@ -115,26 +106,44 @@ using namespace std;
      }
 
      int query(int left, int right) {
-         return query(left, right, 0, 0, tree_size).mx;
+         return query(left, right, 0, 0, tree_size).sum;
      }
 
 #undef LeftChild
 #undef RightChild
 #undef mid
-     };
+ };
+
 
 void Cook(int testcase) {
-    int n, m;
-    cin >> n >> m;
-    vector<int> arr(n);
-    for (int i = 0; i < n; i++) cin >> arr[i];
+    int n, q;
+    cin >> n >> q;
 
-    SegmentTree st(n, arr);
-    while (m--) {
-        int i, x;
-        cin >> i >> x;
-        st.update(--i, x);
-        cout << max(0LL, st.query(0, n)) << '\n';
+    vector<int> arr(n, 0);
+    SegmentTree rows(n, arr), cols(n, arr);
+
+    while (q--) {
+        int t;
+        cin >> t;
+        int x, y;
+        cin >> x >> y;
+        --x, --y;
+        if (t == 1) {
+            rows.update(x, 1);
+            cols.update(y, 1);
+        } else if (t == 2) {
+            rows.update(x, -1);
+            cols.update(y, -1);
+        } else {
+            int x2, y2;
+            cin >> x2 >> y2;
+
+            int rowAttack = rows.query(x, x2);
+            int colAttack = cols.query(y, y2);
+
+            if (rowAttack or colAttack)           cout << "Yes\n";
+            else                                  cout << "No\n";
+        }
     }
 
 }
