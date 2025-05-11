@@ -1,155 +1,84 @@
-//      ﷽
-
-/*
-    "أََرَاكَ تَنظُرُ فِي الآفَاقِ مُنتَظِرًا
-    وَعدَ الشُّرُوقِ وَ فِي عَينَيكَ مَغرِبُهُ
-
-    قُل لِلهُمُومِ الَّتِي أَبقَتكَ مُنكَسِرًا
-    إِنْ طَالَ لَيلُ الأَسَىٰ فَالصُّبحُ يَعقُبُهُ
-
-    عَمَّا قَرِيبٍ يَعُودُ الحَقُّ مُنتَصِرًا
-    وَ يَكتُبُ اللّٰهُ أَمرًا كُنتَ تَرقُبُهُ"
- */
-
-
 #include <bits/stdc++.h>
-
 using namespace std;
+using ll = long long;
+const ll mod = 1e9 + 7;
+const char nl = '\n';
 
-#define Besm_Allah       ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);
-#define int              long long
-#define all(vec)         vec.begin(), vec.end()
-#define rall(vec)        vec.rbegin(), vec.rend()
-#define retv(x)          return void(cout << (x) << '\n')
-#define sz(s)            (int)(s).size()
-#define debug(x)         cout << #x << " = " << x << "\n";
-#define vdebug(a)        cout << #a << " = "; for(auto x: a) cout << x << " "; cout << "\n";
+struct SegTree{
+    int N;
+    vector<int> tree;
 
-struct SegmentTree {
-#define LeftChild  (node * 2 + 1)
-#define RightChild (node * 2 + 2)
-#define mid        (l + r >> 1)
+    SegTree(int n){
+        N = 1;
+        while(N < n) N <<= 1;
+        tree.resize(N << 1);
+    }
 
-private:
-    struct Node {
-        int mx;
+    SegTree(vector<int>& a) : SegTree(a.size()){
+        build(a);
+    }
 
-        Node() : mx(0) {
+    void build(vector<int>& a){
+        for (int i = 0; i < a.size(); ++i) {
+            tree[i + N] = a[i];
         }
-
-        Node(int x) : mx(x) {
+        for (int i = N - 1; i > 0; --i) {
+            tree[i] = merge(tree[i << 1], tree[i << 1 | 1]);
         }
+    }
 
-        void change(int x) {
-            mx -= x;
-        }
-    };
+    int merge(int x, int y){
+        return max(x, y);
+    }
 
-    vector<Node> segData;
-    int tree_size;
-
-    void build(vector<int> &arr, int node, int l, int r) {
-        if (r - l == 1) {
-            if (l < arr.size()) {
-                segData[node] = Node(arr[l]);
-            }
+    void update(int node, int l, int r, int idx, int val){
+        if (l == r) {
+            tree[node] += val;
             return;
         }
-
-        build(arr, LeftChild, l, mid);
-        build(arr, RightChild, mid, r);
-
-        segData[node] = merge(segData[LeftChild], segData[RightChild]);
+        int mid = (l + r) >> 1;
+        if (idx <= mid) update(node << 1, l, mid, idx, val);
+        else update(node << 1 | 1, mid + 1, r, idx, val);
+        tree[node] = merge(tree[node << 1], tree[node << 1 | 1]);
     }
 
-    Node merge(Node &l, Node &r) {
-        Node ans = Node();
-        ans.mx = max(l.mx, r.mx);
-        return ans;
+    void update(int idx, int val){
+        update(1, 0, N - 1, idx, val);
     }
 
-    void update(int idx, int val, int node, int l, int r) {
-        if (r - l == 1) {
-            segData[node].change(val);
-            return;
-        }
-
-        if (idx < mid) {
-            update(idx, val, LeftChild, l, mid);
-        } else {
-            update(idx, val, RightChild, mid, r);
-        }
-
-        segData[node] = merge(segData[LeftChild], segData[RightChild]);
+    int find(int node, int l, int r, int val){
+        if (l == r) return l;
+        int mid = (l + r) >> 1;
+        if (tree[node << 1] >= val) return find(node << 1, l, mid, val);
+        return find(node << 1 | 1, mid + 1, r, val);
     }
 
-    int query(int x, int node, int l, int r) {
-        if (segData[node].mx < x) return -1;
-        if (r - l == 1) {
-            if (segData[node].mx >= x) return l;
-            return -1;
-        }
-
-        int ans = query(x, LeftChild, l, mid);
-        if (ans == -1) ans = query(x, RightChild, mid, r);
-
-        return ans;
+    int find(int val){
+        return (tree[1] < val) ? -1 : find(1, 0, N - 1, val);
     }
-
-public:
-    SegmentTree(int n, vector<int> &arr) {
-        tree_size = 1;
-        while (tree_size < n) tree_size <<= 1;
-        segData = vector<Node>(2 * tree_size);
-        build(arr, 0, 0, tree_size);
-    }
-
-    void update(int idx, int val) {
-        update(idx, val, 0, 0, tree_size);
-    }
-
-    int query(int x) {
-        return query(x, 0, 0, tree_size);
-    }
-
-#undef LeftChild
-#undef RightChild
-#undef mid
 };
 
-
-void Cook(int testcase) {
-    int n, m;
-    cin >> n >> m;
-    vector<int> rooms(n);
-    for (int i = 0; i < n; i++) cin >> rooms[i];
-
-    SegmentTree st(n, rooms);
-
-    for (int i = 0, g; i < m; ++i) {
-        cin >> g;
-        int ans = st.query(g);
-        if (ans == -1) {
-            cout << 0 << ' ';
-            continue;
-        }
-        cout << ans + 1 << ' ';
-        st.update(ans, g);
+void solve(){
+    int n, q;
+    cin >> n >> q;
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i];
+    }
+    SegTree st(a);
+    while (q--){
+        int x;
+        cin >> x;
+        int idx = st.find(x);
+        if (idx != -1) st.update(idx, -x);
+        cout << idx + 1 << " ";
     }
 }
 
-signed main() {
-    Besm_Allah
-#ifndef ONLINE_JUDGE
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-#endif
-    int T = 1;
-    // cin >> T;
-    for (int testcase = 1; testcase <= T; ++testcase) {
-        // cout << "Case #" << testcase << ": ";
-        Cook(testcase);
-    }
-
-    return 0;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int t = 1;
+//    cin >>t;
+    while(t--) solve();
 }

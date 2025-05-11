@@ -1,156 +1,117 @@
- //      ﷽
-
-/*
-    "أََرَاكَ تَنظُرُ فِي الآفَاقِ مُنتَظِرًا
-    وَعدَ الشُّرُوقِ وَ فِي عَينَيكَ مَغرِبُهُ
-
-    قُل لِلهُمُومِ الَّتِي أَبقَتكَ مُنكَسِرًا
-    إِنْ طَالَ لَيلُ الأَسَىٰ فَالصُّبحُ يَعقُبُهُ
-
-    عَمَّا قَرِيبٍ يَعُودُ الحَقُّ مُنتَصِرًا
-    وَ يَكتُبُ اللّٰهُ أَمرًا كُنتَ تَرقُبُهُ"
- */
-
-
 #include <bits/stdc++.h>
-
 using namespace std;
+using ll = long long;
+const ll mod = 1e9 + 7;
+const char nl = '\n';
 
-#define Besm_Allah       ios::sync_with_stdio(0),cin.tie(0),cout.tie(0);
-#define int              long long
-#define all(vec)         vec.begin(), vec.end()
-#define rall(vec)        vec.rbegin(), vec.rend()
-#define retv(x)          return void(cout << (x) << '\n')
-#define sz(s)            (int)(s).size()
-#define debug(x)         cout << #x << " = " << x << "\n";
-#define vdebug(a)        cout << #a << " = "; for(auto x: a) cout << x << " "; cout << "\n";
+struct Node{
+    ll sum{}, ans{}, mx_pref{}, mx_suff{};
+    Node() {}
+    Node(ll val) {
+        sum = val;
+        ans = mx_pref = mx_suff = max(0ll, val);
+    }
+};
 
- struct SegmentTree {
-#define LeftChild  (node * 2 + 1)
-#define RightChild (node * 2 + 2)
-#define mid        (l + r >> 1)
+struct SegTree{
+    int N;
+    vector<Node> tree;
 
- private:
-     struct Node {
-         int sum;
-         int pref;
-         int suff;
-         int mx;
+    SegTree(int n){
+        N = 1;
+        while(N < n) N <<= 1;
+        tree.resize(N << 1);
+    }
 
-         Node() {
-             mx = pref = suff = -1e15;
-             sum = 0;
-         }
+    SegTree(vector<int>& a) : SegTree(a.size()){
+        build(1, 0, N - 1, a);
+    }
 
-         Node(int x) : sum(x) {
-             mx = pref = suff = sum = x;
-         }
+    Node merge(Node x, Node y){
+        Node res;
+        res.sum = x.sum + y.sum;
+        res.ans = max({x.ans, y.ans, x.mx_suff + y.mx_pref});
+        res.mx_pref = max(x.mx_pref, x.sum + y.mx_pref);
+        res.mx_suff = max(y.mx_suff, y.sum + x.mx_suff);
+        return res;
+    }
 
-         void change(int x) {
-             mx = pref = suff = sum = x;
-         }
-     };
+    void build(int node, int left, int right, vector<int>& a){
+        if (left == right) {
+            if(left < a.size()) tree[node] = a[left];
+            return;
+        }
+        int mid = (left + right) /2;
+        build(node << 1, left, mid, a);
+        build(node << 1 | 1, mid + 1, right, a);
+        tree[node] = merge(tree[node << 1], tree[node << 1 | 1]);
+    }
 
-     vector<Node> segData;
-     int tree_size;
+    void build(vector<int>& a){
+        for (int i = 0; i < a.size(); ++i) {
+            tree[N + i] = a[i];
+        }
+        for (int i = N - 1; i > 0; --i) {
+            tree[i] = merge(tree[i << 1], tree[i << 1 | 1]);
+        }
+    }
 
-     void build(vector<int> &arr, int node, int l, int r) {
-         if (r - l == 1) {
-             if (l < arr.size()) {
-                 segData[node] = Node(arr[l]);
-             }
-             return;
-         }
+    void update(int node, int left,int right, int idx, int val){
+        // left - right    node
+        // left_child ( 2 * node):  left - mid       right_child (2 * node + 1):  mid + 1 - right
+        if (left == right){
+            tree[node] = Node(val);
+            return;
+        }
+        int mid = (left + right)/2;
+        if (idx <= mid){
+            update(node << 1, left, mid, idx, val);
+        }else{
+            update(node << 1 | 1, mid + 1, right, idx, val);
+        }
+        tree[node] = merge(tree[node << 1], tree[node << 1 | 1]);
+    }
 
-         build(arr, LeftChild, l, mid);
-         build(arr, RightChild, mid, r);
+    Node query(int node, int left, int right, int ql, int qr){
+        if (left >= ql && right <= qr) return tree[node];
+        if (right < ql || left > qr) return Node(0);
+        int mid = (left + right) / 2;
+        Node left_query = query(node << 1, left , mid, ql, qr);
+        Node right_query = query(node << 1 | 1, mid + 1, right, ql, qr);
+        return merge(left_query, right_query);
+    }
 
-         segData[node] = merge(segData[LeftChild], segData[RightChild]);
-     }
+    void update(int idx, int val){
+        update(1, 0, N - 1, idx, val);
+    }
 
-     Node merge(Node &l, Node &r) {
-         Node ans = Node();
-         ans.mx = max({l.mx, r.mx, l.suff + r.pref});
-         ans.pref = max(l.pref, l.sum + r.pref);
-         ans.suff = max(r.suff, r.sum + l.suff);
-         ans.sum = l.sum + r.sum;
-         return ans;
-     }
+    ll query(int l, int r){
+        return query(1, 0, N - 1, l, r).ans;
+    }
 
-     void update(int idx, int val, int node, int l, int r) {
-         if (r - l == 1) {
-             segData[node].change(val);
-             return;
-         }
+};
 
-         if (idx < mid) {
-             update(idx, val, LeftChild, l, mid);
-         } else {
-             update(idx, val, RightChild, mid, r);
-         }
-
-         segData[node] = merge(segData[LeftChild], segData[RightChild]);
-     }
-
-     Node query(int left, int right, int node, int l, int r) {
-         if (l >= left and r <= right) return segData[node];
-         if (l >= right or left >= r) return Node();
-
-         Node L = query(left, right, LeftChild, l, mid);
-         Node R = query(left, right, RightChild, mid, r);
-
-         return merge(L, R);
-     }
-
- public:
-     SegmentTree(int n, vector<int> &arr) {
-         tree_size = 1;
-         while (tree_size < n) tree_size <<= 1;
-         segData = vector<Node>(2 * tree_size);
-         build(arr, 0, 0, tree_size);
-     }
-
-     void update(int idx, int val) {
-         update(idx, val, 0, 0, tree_size);
-     }
-
-     int query(int left, int right) {
-         return query(left, right, 0, 0, tree_size).mx;
-     }
-
-#undef LeftChild
-#undef RightChild
-#undef mid
-     };
-
-void Cook(int testcase) {
+void solve(){
     int n, m;
     cin >> n >> m;
-    vector<int> arr(n);
-    for (int i = 0; i < n; i++) cin >> arr[i];
-
-    SegmentTree st(n, arr);
-    while (m--) {
-        int i, x;
-        cin >> i >> x;
-        st.update(--i, x);
-        cout << max(0LL, st.query(0, n)) << '\n';
+    vector<int> a(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> a[i];
     }
-
+    SegTree st(a);
+    for (int i = 0; i < m; ++i) {
+        int idx, val;
+        cin >> idx >> val;
+        idx--;
+        st.update(idx , val);
+        cout << st.query(0, n - 1) << nl;
+    }
 }
 
-signed main() {
-    Besm_Allah
-#ifndef ONLINE_JUDGE
-    freopen("input.txt", "r", stdin);
-    freopen("output.txt", "w", stdout);
-#endif
-    int T = 1;
-    // cin >> T;
-    for (int testcase = 1; testcase <= T; ++testcase) {
-        // cout << "Case #" << testcase << ": ";
-        Cook(testcase);
-    }
-
-    return 0;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    int t = 1;
+//    cin >>t;
+    while(t--) solve();
 }
